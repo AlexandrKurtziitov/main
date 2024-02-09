@@ -1,5 +1,6 @@
 package com.kurciitov.servlets;
 
+import com.kurciitov.storage.PhraseStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +24,8 @@ class MainServletTest {
     private HttpServletResponse httpServletResponse;
     private StringWriter responseWriter;
 
+    private PhraseStorageService phraseStorageService;
+
     private static final int STATUS_OK = 200;
 
     @BeforeEach
@@ -30,6 +33,7 @@ class MainServletTest {
         mainServlet = new MainServlet();
         httpServletRequest = mock(HttpServletRequest.class);
         httpServletResponse = mock(HttpServletResponse.class);
+        phraseStorageService = mock(PhraseStorageService.class);
 
         responseWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(responseWriter);
@@ -39,11 +43,25 @@ class MainServletTest {
 
     @Test
     void doGet() throws ServletException, IOException {
+        String prhase = "I help you";
+
         mainServlet.doGet(httpServletRequest, httpServletResponse);
+        doReturn(prhase).when(phraseStorageService).getRandomPhrase();
+
+        assertEquals(prhase, phraseStorageService.getRandomPhrase());
         verify(httpServletResponse, times(1)).setStatus(STATUS_OK);
     }
 
     @Test
-    void doPost() {
+    void doPost() throws ServletException, IOException {
+        String prhase = "I help you";
+
+
+        phraseStorageService.create(prhase);
+        httpServletResponse.setStatus(STATUS_OK);
+        mainServlet.doPost(httpServletRequest, httpServletResponse);
+
+        verify(phraseStorageService, times(1)).create(prhase);
+        verify(httpServletResponse, times(1)).setStatus(STATUS_OK);
     }
 }
