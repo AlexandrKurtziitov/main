@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  tomcat:
+    image: tomcat:9.0-jdk17
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./target/app.war:/usr/local/tomcat/webapps/app.war"
